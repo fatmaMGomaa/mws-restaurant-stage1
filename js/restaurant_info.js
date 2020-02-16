@@ -12,25 +12,35 @@ document.addEventListener('DOMContentLoaded', (event) => {
  * Initialize leaflet map
  */
 initMap = () => {
+  // copyright to https://alexandroperez.github.io/mws-walkthrough/?1.25.fixing-offline-mode
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
-    } else {      
-      self.newMap = L.map('map', {
-        center: [restaurant.latlng.lat, restaurant.latlng.lng],
-        zoom: 16,
-        scrollWheelZoom: false
-      });
-      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-        mapboxToken: 'pk.eyJ1IjoiZmF0bWFhYSIsImEiOiJjazZubzd6bHEwN3l2M2twOTRqd2dxOWI1In0.Ahd84JSzFjGi8MTAVSSZHg',
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" tabindex = "-1">OpenStreetMap</a> contributors, ' +
-          '<a href="https://creativecommons.org/licenses/by-sa/2.0/" tabindex = "-1">CC-BY-SA</a>, ' +
-          'Imagery © <a href="https://www.mapbox.com/" tabindex = "-1">Mapbox</a>',
-        id: 'mapbox.streets'    
-      }).addTo(newMap);
+    } else {  
+      if (navigator.onLine){
+        try {
+          self.newMap = L.map('map', {
+            center: [restaurant.latlng.lat, restaurant.latlng.lng],
+            zoom: 16,
+            scrollWheelZoom: false
+          });
+          L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
+            mapboxToken: 'pk.eyJ1IjoiZmF0bWFhYSIsImEiOiJjazZubzd6bHEwN3l2M2twOTRqd2dxOWI1In0.Ahd84JSzFjGi8MTAVSSZHg',
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/" tabindex = "-1">OpenStreetMap</a> contributors, ' +
+              '<a href="https://creativecommons.org/licenses/by-sa/2.0/" tabindex = "-1">CC-BY-SA</a>, ' +
+              'Imagery © <a href="https://www.mapbox.com/" tabindex = "-1">Mapbox</a>',
+            id: 'mapbox.streets'    
+          }).addTo(newMap);
+          DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
+        }catch(e){
+          console.log (`can not load the map because of ${e}`);
+          document.querySelector("#map").innerHTML = "<h2 class='offline-map'>we can't load the map due to some problems</h2>"
+        }
+      }else {
+        document.querySelector("#map").innerHTML = "<h2 class='offline-map'>we can't load the map due to connection problems</h2>"
+      }    
       fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
     }
   });
 }  

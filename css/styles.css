@@ -47,6 +47,10 @@ h1, h2, h3, h4, h5, h6 {
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+.offline-map{
+  margin: 10px;
+  text-align: center;
+}
 .skip-link {
   display: block;
   position: absolute;
